@@ -6,8 +6,8 @@ const app: Application = express();
 //parsers
 app.use(express.json());
 app.use(cors());
-
-app.get("/", (req: Request, res: Response) => {
+// routes
+app.use("/api/users", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
