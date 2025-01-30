@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userSchemaValidation } from "./user.validation";
-import { createUserIntoDB } from "./user.service";
+import { createUserIntoDB, getAllUsersFromDB } from "./user.service";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -22,7 +22,19 @@ const createUser = async (req: Request, res: Response) => {
     });
   }
 };
-
+const getAllUsers = async(req: Request, res: Response)=> {
+    try{
+        const result = await getAllUsersFromDB();
+        res.status(200).json({
+            success: true,
+            message: 'Users are retrieved successfully',
+            data: result
+        })
+    } catch(error){
+        console.log(error);
+    }
+}
 export const UserController = {
   createUser,
+  getAllUsers
 };
