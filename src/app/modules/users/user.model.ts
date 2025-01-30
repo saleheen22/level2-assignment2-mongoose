@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import bcrypt from 'bcrypt';
 import {
   Taddress,
   TfullName,
@@ -6,6 +7,7 @@ import {
   TUser,
   UserModel,
 } from "./user.interface";
+import config from "../../config";
 
 const fullNameSchema = new Schema<TfullName>({
   firstName: {
@@ -96,8 +98,23 @@ const userSchema = new Schema<TUser, UserModel>(
   {
     toJSON: {
       virtuals: true,
+      transform(doc, ret) {
+        delete ret.password; // Remove password field
+        return ret;
+      }
     },
   },
 );
 
+
+// middleware
+userSchema.pre('save', async function(next){
+    const user = this;
+    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds));
+    next();
+})
+userSchema.post('save', function(doc, next){
+    doc.password = '';
+    next();
+})
 export const User = model<TUser, UserModel>("User", userSchema);
