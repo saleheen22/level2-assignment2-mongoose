@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userSchemaValidation } from "./user.validation";
-import { createUserIntoDB, getAllUsersFromDB, updateOneUserFromDB } from "./user.service";
+import { createUserIntoDB, deleteOneUserFromDB, getAllUsersFromDB, updateOneUserFromDB } from "./user.service";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -66,8 +66,43 @@ const updateOneUser = async(req: Request, res: Response) => {
     });
   }
 }
+const deleteOneUser = async(req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId);
+    const parsedUserId = parseInt(userId, 10);
+
+    if (isNaN(parsedUserId)) {
+      return res.status(400).json({ error: "Invalid userId parameter." });
+    }
+
+    
+
+ 
+
+    // Update user in the database
+    const result = await deleteOneUserFromDB(parsedUserId);
+
+    // Respond with success
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully.",
+      data: null,
+    });
+  } catch (error: any) {
+    // Handle validation or service errors
+    return res.status(500).json({
+      message: "User not found",
+    error: {
+        "code": 404,
+        "description": "User not found!"
+    }
+    });
+  }
+}
 export const UserController = {
   createUser,
   getAllUsers,
-  updateOneUser
+  updateOneUser,
+  deleteOneUser
 };

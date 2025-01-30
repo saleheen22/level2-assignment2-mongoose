@@ -28,4 +28,6 @@ export type TUser = {
   isDeleted: boolean;
 };
 
-export interface UserModel extends Model<TUser> {}
+export interface UserModel extends Model<TUser> {
+  isUserExists(id: number): Promise<TUser | null>;
+}
