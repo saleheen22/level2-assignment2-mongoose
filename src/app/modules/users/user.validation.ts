@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 // Define the FullName schema
-export const fullNameSchemaValidation
- = z.object({
+export const fullNameSchemaValidation = z.object({
   firstName: z
     .string({
       required_error: "First name is required",
@@ -10,12 +9,9 @@ export const fullNameSchemaValidation
     })
     .trim()
     .min(1, { message: "First name cannot be empty" })
-    .refine(
-      (val) => val.charAt(0) === val.charAt(0).toUpperCase(),
-      {
-        message: "First name is not in uppercase format",
-      }
-    ),
+    .refine((val) => val.charAt(0) === val.charAt(0).toUpperCase(), {
+      message: "First name is not in uppercase format",
+    }),
   lastName: z
     .string({
       required_error: "Last name is required",
@@ -26,8 +22,7 @@ export const fullNameSchemaValidation
 });
 
 // Define the Address schema
-export const addressSchemaValidation
- = z.object({
+export const addressSchemaValidation = z.object({
   street: z.string({
     required_error: "Street is required",
     invalid_type_error: "Street must be a string",
@@ -43,8 +38,7 @@ export const addressSchemaValidation
 });
 
 // Define the Orders schema
-export const ordersSchemaValidation
- = z.object({
+export const ordersSchemaValidation = z.object({
   productName: z
     .string({
       invalid_type_error: "Product name must be a string",
@@ -63,8 +57,7 @@ export const ordersSchemaValidation
 });
 
 // Define the main User schema
-export const userSchemaValidation
- = z.object({
+export const userSchemaValidation = z.object({
   userId: z.number({
     required_error: "User ID is required",
     invalid_type_error: "User ID must be a number",
@@ -81,8 +74,7 @@ export const userSchemaValidation
       invalid_type_error: "Password must be a string",
     })
     .min(1, { message: "Password cannot be empty" }),
-  fullName: fullNameSchemaValidation
-,
+  fullName: fullNameSchemaValidation,
   age: z
     .number({
       invalid_type_error: "Age must be a number",
@@ -103,9 +95,7 @@ export const userSchemaValidation
       invalid_type_error: "Hobbies must be an array of strings",
     })
     .min(1, { message: "You at least need one hobby" }),
-  address: addressSchemaValidation
-,
-  orders: ordersSchemaValidation
-,
+  address: addressSchemaValidation,
+  orders: ordersSchemaValidation.optional(),
   isDeleted: z.boolean().optional().default(false),
 });
