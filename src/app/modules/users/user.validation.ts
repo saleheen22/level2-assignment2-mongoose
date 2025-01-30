@@ -78,14 +78,13 @@ export const userSchemaValidation = z.object({
   age: z
     .number({
       invalid_type_error: "Age must be a number",
-    })
-    .optional(),
+    }),
   email: z
     .string({
       invalid_type_error: "Email must be a string",
     })
     .email({ message: "Invalid email format" })
-    .optional(),
+    ,
   isActive: z.boolean({
     required_error: "isActive is required",
     invalid_type_error: "isActive must be a boolean",

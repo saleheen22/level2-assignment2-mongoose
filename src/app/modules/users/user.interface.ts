@@ -10,9 +10,9 @@ export type Taddress = {
   country: string;
 };
 export type Torders = {
-  productName: string;
-  price: number;
-  quantity: number;
+  productName?: string;
+  price?: number;
+  quantity?: number;
 };
 export type TUser = {
   userId: number;
@@ -24,7 +24,7 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: Taddress;
-  orders: Torders;
+  orders?: Torders;
   isDeleted: boolean;
 };
 

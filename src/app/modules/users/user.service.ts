@@ -9,3 +9,7 @@ export const getAllUsersFromDB = async()=> {
     const result = await User.find();
     return result;
 }
+export const updateOneUserFromDB = async(userId: number, userData: TUser)=> {
+  const result = await User.updateOne({userId}, userData);
+  return result;
+}

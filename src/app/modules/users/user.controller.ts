@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userSchemaValidation } from "./user.validation";
-import { createUserIntoDB, getAllUsersFromDB } from "./user.service";
+import { createUserIntoDB, getAllUsersFromDB, updateOneUserFromDB } from "./user.service";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,7 @@ const createUser = async (req: Request, res: Response) => {
 
     // validation using zod
     const zodParsedData = userSchemaValidation.parse(UserData);
-    const result = await createUserIntoDB(UserData);
+    const result = await createUserIntoDB(zodParsedData);
     res.status(200).json({
       success: true,
       message: "User is created is successfully",
@@ -34,7 +34,40 @@ const getAllUsers = async(req: Request, res: Response)=> {
         console.log(error);
     }
 }
+const updateOneUser = async(req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId);
+    const parsedUserId = parseInt(userId, 10);
+
+    if (isNaN(parsedUserId)) {
+      return res.status(400).json({ error: "Invalid userId parameter." });
+    }
+
+    const { user: userData } = req.body;
+
+    // Validate input using Zod
+    const zodParsedData = userSchemaValidation.parse(userData);
+
+    // Update user in the database
+    const result = await updateOneUserFromDB(parsedUserId, zodParsedData);
+
+    // Respond with success
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully.",
+      data: result,
+    });
+  } catch (error: any) {
+    // Handle validation or service errors
+    return res.status(500).json({
+      success: false,
+      message: error.message || "An unexpected error occurred.",
+    });
+  }
+}
 export const UserController = {
   createUser,
-  getAllUsers
+  getAllUsers,
+  updateOneUser
 };
