@@ -7,6 +7,7 @@ import {
   getAllUsersFromDB,
   getOneOrderFromDB,
   getOneTotalPriceFromDB,
+  getOneUserFromDB,
   updateOneOrderFromDB,
   updateOneUserFromDB,
 } from "./user.service";
@@ -170,9 +171,36 @@ const getOneTotalPrice = async (req: Request, res: Response) => {
     });
   }
 };
+const getOneUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId)) {
+      res.status(400).json({ error: "Invalid userId parameter." });
+    }
+
+    // Update user in the database
+    const result = await getOneUserFromDB(parsedUserId) ;
+
+    // Respond with success
+    res.status(200).json({
+      success: true,
+      message: "Users fetched successfully!.",
+      data: result,
+    });
+  } catch (error) {
+    // Handle validation or service errors
+    res.status(500).json({
+      success: false,
+      message: error || "An unexpected error occurred.",
+    });
+  }
+};
 export const UserController = {
   createUser,
   getAllUsers,
+  getOneUser,
   updateOneUser,
   deleteOneUser,
   updateOneOrder,

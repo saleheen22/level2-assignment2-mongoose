@@ -9,6 +9,10 @@ export const getAllUsersFromDB = async () => {
   const result = await User.find({ isDeleted: false });
   return result;
 };
+export const getOneUserFromDB = async (userId: number) => {
+  const result = await User.findOne({ userId }, { isDeleted: false });
+  return result;
+};
 export const updateOneUserFromDB = async (userId: number, userData: TUser) => {
   const result = await User.updateOne({ userId }, userData);
   return result;
