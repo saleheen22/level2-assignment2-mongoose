@@ -75,16 +75,14 @@ export const userSchemaValidation = z.object({
     })
     .min(1, { message: "Password cannot be empty" }),
   fullName: fullNameSchemaValidation,
-  age: z
-    .number({
-      invalid_type_error: "Age must be a number",
-    }),
+  age: z.number({
+    invalid_type_error: "Age must be a number",
+  }),
   email: z
     .string({
       invalid_type_error: "Email must be a string",
     })
-    .email({ message: "Invalid email format" })
-    ,
+    .email({ message: "Invalid email format" }),
   isActive: z.boolean({
     required_error: "isActive is required",
     invalid_type_error: "isActive must be a boolean",
@@ -95,6 +93,6 @@ export const userSchemaValidation = z.object({
     })
     .min(1, { message: "You at least need one hobby" }),
   address: addressSchemaValidation,
-  orders: ordersSchemaValidation.optional(),
+  orders: z.array(ordersSchemaValidation).optional(),
   isDeleted: z.boolean().optional().default(false),
 });

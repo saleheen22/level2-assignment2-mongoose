@@ -1,10 +1,19 @@
-import { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Request, RequestHandler, Response } from "express";
 import { userSchemaValidation } from "./user.validation";
-import { createUserIntoDB, deleteOneUserFromDB, getAllUsersFromDB, updateOneUserFromDB } from "./user.service";
+import {
+  createUserIntoDB,
+  deleteOneUserFromDB,
+  getAllUsersFromDB,
+  getOneOrderFromDB,
+  getOneTotalPriceFromDB,
+  updateOneOrderFromDB,
+  updateOneUserFromDB,
+} from "./user.service";
 
-const createUser = async (req: Request, res: Response) => {
+const createUser: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { user: UserData } = req.body;
+    const UserData = req.body;
 
     // validation using zod
     const zodParsedData = userSchemaValidation.parse(UserData);
@@ -14,37 +23,37 @@ const createUser = async (req: Request, res: Response) => {
       message: "User is created is successfully",
       data: result,
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
-      success: true,
-      message: error.message || "something is wrong",
+      success: false,
+      message: error || "something is wrong",
       error: error,
     });
   }
 };
-const getAllUsers = async(req: Request, res: Response)=> {
-    try{
-        const result = await getAllUsersFromDB();
-        res.status(200).json({
-            success: true,
-            message: 'Users are retrieved successfully',
-            data: result
-        })
-    } catch(error){
-        console.log(error);
-    }
-}
-const updateOneUser = async(req: Request, res: Response) => {
+const getAllUsers: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const result = await getAllUsersFromDB();
+    res.status(200).json({
+      success: true,
+      message: "Users are retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const updateOneUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     console.log(userId);
     const parsedUserId = parseInt(userId, 10);
 
     if (isNaN(parsedUserId)) {
-      return res.status(400).json({ error: "Invalid userId parameter." });
+      res.status(400).json({ error: "Invalid userId parameter." });
     }
 
-    const { user: userData } = req.body;
+    const userData = req.body;
 
     // Validate input using Zod
     const zodParsedData = userSchemaValidation.parse(userData);
@@ -53,56 +62,120 @@ const updateOneUser = async(req: Request, res: Response) => {
     const result = await updateOneUserFromDB(parsedUserId, zodParsedData);
 
     // Respond with success
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "User updated successfully.",
       data: result,
     });
-  } catch (error: any) {
+  } catch (error) {
     // Handle validation or service errors
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: error.message || "An unexpected error occurred.",
+      message: error || "An unexpected error occurred.",
     });
   }
-}
-const deleteOneUser = async(req: Request, res: Response) => {
+};
+const deleteOneUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     console.log(userId);
     const parsedUserId = parseInt(userId, 10);
 
     if (isNaN(parsedUserId)) {
-      return res.status(400).json({ error: "Invalid userId parameter." });
+      res.status(400).json({ error: "Invalid userId parameter." });
     }
 
-    
-
- 
-
     // Update user in the database
-    const result = await deleteOneUserFromDB(parsedUserId);
+    await deleteOneUserFromDB(parsedUserId);
 
     // Respond with success
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "User deleted successfully.",
       data: null,
     });
-  } catch (error: any) {
+  } catch (error) {
     // Handle validation or service errors
-    return res.status(500).json({
-      message: "User not found",
-    error: {
-        "code": 404,
-        "description": "User not found!"
-    }
+    res.status(500).json({
+      success: false,
+      message: error || "User can't be deleted.",
     });
   }
-}
+};
+const updateOneOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId);
+    const parsedUserId = parseInt(userId, 10);
+
+    if (isNaN(parsedUserId)) {
+      res.status(400).json({ error: "Invalid userId parameter." });
+    }
+    const orderData = req.body;
+    const result = await updateOneOrderFromDB(parsedUserId, orderData);
+
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully.",
+      data: null,
+    });
+  } catch (error) {
+    // Handle validation or service errors
+    res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to create order.",
+    });
+  }
+};
+const getOneOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId)) {
+      res.status(400).json({ error: "Invalid userId parameter." });
+    }
+    const result = await getOneOrderFromDB(parsedUserId);
+    res.status(200).json({
+      success: true,
+      message: "Order fetched successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to get the error",
+    });
+  }
+};
+const getOneTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId)) {
+      res.status(400).json({ error: "Invalid userId parameter." });
+    }
+    const result = await getOneTotalPriceFromDB(parsedUserId);
+    res.status(200).json({
+      success: true,
+      message: "Total price calculated successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to get the error",
+    });
+  }
+};
 export const UserController = {
   createUser,
   getAllUsers,
   updateOneUser,
-  deleteOneUser
+  deleteOneUser,
+  updateOneOrder,
+  getOneOrder,
+  getOneTotalPrice,
 };

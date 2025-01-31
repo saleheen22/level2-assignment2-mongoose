@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import {
   Taddress,
   TfullName,
@@ -87,7 +87,7 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
     },
     orders: {
-      type: ordersSchema,
+      type: [ordersSchema],
     },
     isDeleted: {
       type: Boolean,
@@ -99,27 +99,30 @@ const userSchema = new Schema<TUser, UserModel>(
     toJSON: {
       virtuals: true,
       transform(doc, ret) {
-        delete ret.password; // Remove password field
+        delete ret.password;
         return ret;
-      }
+      },
     },
   },
 );
 
-
 // middleware
-userSchema.pre('save', async function(next){
-    const user = this;
-    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds));
-    next();
-})
-userSchema.post('save', function(doc, next){
-    doc.password = '';
-    next();
-})
-userSchema.statics.isUserExists = async function(id: string){
-  const existingUser = await User.findOne({id})
+userSchema.pre("save", async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
+userSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await User.findOne({ id });
 
   return existingUser;
-}
+};
 export const User = model<TUser, UserModel>("User", userSchema);
