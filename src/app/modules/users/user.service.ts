@@ -11,14 +11,23 @@ export const getAllUsersFromDB = async () => {
 };
 export const getOneUserFromDB = async (userId: number) => {
   const result = await User.findOne({ userId }, { isDeleted: false });
+  if (!result) {
+    throw new Error(`User with userId ${userId} not found.`);
+  }
   return result;
 };
 export const updateOneUserFromDB = async (userId: number, userData: TUser) => {
   const result = await User.updateOne({ userId }, userData);
+  if (!result) {
+    throw new Error(`User with userId ${userId} not found.`);
+  }
   return result;
 };
 export const deleteOneUserFromDB = async (userId: number) => {
   const result = await User.updateOne({ userId }, { isDeleted: true });
+  if (!result) {
+    throw new Error(`User with userId ${userId} not found.`);
+  }
   return result;
 };
 export const updateOneOrderFromDB = async (
