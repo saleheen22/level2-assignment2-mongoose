@@ -2,7 +2,7 @@ import express, { Application } from "express";
 import cors from "cors";
 import { UserRoutes } from "./app/modules/users/user.routes";
 const app: Application = express();
-// const port = 3000
+
 
 //parsers
 app.use(express.json());
